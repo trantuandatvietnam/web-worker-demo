@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>Fibonacci Calculation</h1>
+    <p>Result from Web Worker: <output id="worker-result"></output></p>
+    <button onclick="startWorker()">Start Worker</button>
+    <button onclick="stopWorker()">Stop Worker</button>
+
+    <p>Result from Main Thread: <output id="main-result"></output></p>
+    <button onclick="calculateFibonacciInMainThread()">Calculate in Main Thread</button>
+
+    <script>
+      let worker;
+
+      // Start Web Worker
+      function startWorker() {
+        if (typeof Worker !== "undefined") {
+          if (typeof worker === "undefined") {
+            worker = new Worker("fibonacci_worker.js");
+          }
+          const n = prompt("Enter the Fibonacci number to calculate (e.g., 45):", "45");
+          worker.postMessage(parseInt(n));
+          worker.onmessage = function (event) {
+            document.getElementById("worker-result").innerHTML = `Fibonacci(${n}) = ${event.data.result} (calculated in ${event.data.time}ms)`;
+          };
+        } else {
+          alert("Sorry, your browser does not support Web Workers.");
+        }
+      }
+
+      // Stop Web Worker
+      function stopWorker() {
+        if (worker) {
+          worker.terminate();
+          worker = undefined;
+        }
+      }
+
+      // Calculate Fibonacci in Main Thread
+      function calculateFibonacciInMainThread() {
+        const n = prompt("Enter the Fibonacci number to calculate (e.g., 45):", "45");
+        const start = performance.now();
+
+        function fibonacci(num) {
+          if (num <= 1) return num;
+          return fibonacci(num - 1) + fibonacci(num - 2);
+        }
+
+        const result = fibonacci(parseInt(n));
+        const end = performance.now();
+
+        document.getElementById("main-result").innerHTML = `Fibonacci(${n}) = ${result} (calculated in ${(end - start).toFixed(2)}ms)`;
+      }
+    </script>
+  </body>
+</html>
