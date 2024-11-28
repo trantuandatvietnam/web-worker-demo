@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shared Worker Example</title>
+</head>
+<body>
+    <h1>Shared Worker Demo</h1>
+    <button id="increment">Increment Counter</button>
+    <button id="get">Get Current Counter</button>
+    <p id="output"></p>
+
+    <script>
+        // Tạo Shared Worker
+        const sharedWorker = new SharedWorker("shared_worker.js");
+        const port = sharedWorker.port;
+
+        // Mở kết nối
+        port.start();
+
+        // Hiển thị tin nhắn nhận được từ worker
+        port.onmessage = (event) => {
+            document.getElementById("output").innerText = event.data;
+        };
+
+        // Gửi lệnh "increment" khi nhấn nút Increment
+        document.getElementById("increment").onclick = () => {
+            port.postMessage("increment");
+        };
+
+        // Gửi lệnh "get" khi nhấn nút Get
+        document.getElementById("get").onclick = () => {
+            port.postMessage("get");
+        };
+    </script>
+</body>
+</html>
